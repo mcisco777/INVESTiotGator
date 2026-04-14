@@ -20,12 +20,18 @@ const int FIXED_SPEED_ADDR = 0x33;
 const int ENC_TOTAL_ADDR = 0x3C;
 const int MOTOR_TYPE_JGB37_520_12V_110RPM = 3;
 
-int8_t MotorType = MOTOR_TYPE_JGB37_520_12V_110RPM;
-int8_t MotorPolarity = 0;
+int8_t motorType = MOTOR_TYPE_JGB37_520_12V_110RPM;
+int8_t motorPolarity = 0;
 
-int8_t car_forward[4]={0,23,0,-23};
-int8_t car_retreat[4]={0,-23,0,23};
-int8_t car_stop[4]={0,0,0,0};
+int8_t tankForward[4]={0,-20,0,20};
+int8_t tankReverse[4]={0,20,0,-20};
+int8_t tankStop[4]={0,0,0,0};
+int8_t hardLeft[4]={0,-20,0,-20};
+int8_t hardRight[4]={0,20,0,20};
+int8_t leftForward[4]={0,-20,0,10};
+int8_t rightForward[4]={0,-10,0,20};
+int8_t leftReverse[4]={0,20,0,-10};
+int8_t rightReverse[4]={0,10,0,-20};
 
 /*********************Declare Functions*******************/
 //bool WireWriteByte(uint8_t val);   //(Send byte data through I2C)
@@ -37,22 +43,46 @@ void setup() {
   waitFor(Serial.isConnected, 5000);
   Wire.begin();
   delay(200);
-  WireWriteDataArray(MOTOR_TYPE_ADDR,&MotorType,1);
+  WireWriteDataArray(MOTOR_TYPE_ADDR,&motorType,1);
   delay(5);
-  WireWriteDataArray(POLARITY_ADDR,&MotorPolarity,1);
+  WireWriteDataArray(POLARITY_ADDR,&motorPolarity,1);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  WireWriteDataArray(FIXED_SPEED_ADDR,car_forward,4);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankForward,4);
   delay(2000);
-  WireWriteDataArray(FIXED_SPEED_ADDR,car_stop,4);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
   delay(1000);
-  /* (Car moves backward) */
-  WireWriteDataArray(FIXED_SPEED_ADDR,car_retreat,4);
+  WireWriteDataArray(FIXED_SPEED_ADDR,hardLeft,4);
   delay(2000);
-  WireWriteDataArray(FIXED_SPEED_ADDR,car_stop,4);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
+  delay(1000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankReverse,4);
+  delay(2000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
   delay(1000);  
+  WireWriteDataArray(FIXED_SPEED_ADDR,rightForward,4);
+  delay(2000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
+  delay(1000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,leftForward,4);
+  delay(2000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
+  delay(1000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,hardRight,4);
+  delay(2000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
+  delay(1000);  
+  WireWriteDataArray(FIXED_SPEED_ADDR,leftReverse,4);
+  delay(2000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
+  delay(1000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,rightReverse,4);
+  delay(2000);
+  WireWriteDataArray(FIXED_SPEED_ADDR,tankStop,4);
+  delay(1000);
+
 }
 
 bool WireWriteDataArray(uint8_t reg,int8_t *val,unsigned int len){    //(Send data through I2C)
