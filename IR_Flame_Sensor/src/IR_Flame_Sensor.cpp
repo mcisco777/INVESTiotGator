@@ -31,23 +31,7 @@ void loop() {
     Serial.printf("The flame is present => The fire is detected\n");
     */
    
-  int flameValue = analogRead(AO_PIN); // value of ~ 3900 when the flame is not present and ~ 200 when the flame is present
+  int flameValue = analogRead(AO_PIN); // value of ~ 3900 when the flame is not present and ~ 200 (or 0) when the flame is present
 
   Serial.printf("Flame Value: %d\n", flameValue);
 }
-
-
-/*
-const int AO_PIN = A0;  // P2's pin connected to AO pin of the flame sensor
-
-void setup() {
-  // initialize serial communication
-  Serial.begin(9600);
-}
-
-void loop() {
-  int flameValue = analogRead(AO_PIN);
-
-  Serial.println(flameValue);
-}
-*/
