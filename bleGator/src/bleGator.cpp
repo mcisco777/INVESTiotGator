@@ -31,7 +31,10 @@ const int MOTOR_TYPE_JGB37_520_12V_110RPM = 3;
 uint8_t txBuf[UART_TX_BUF_SIZE];
 uint8_t i;
 //unsigned int last1;
-bool dataReceived = false;
+bool forward = false;
+bool reverse = false;
+bool left = false;
+bool right = false;
 
 int8_t motorType = MOTOR_TYPE_JGB37_520_12V_110RPM;
 int8_t motorPolarity = 0;
@@ -80,21 +83,26 @@ void setup() {
 }
 
 void loop() {
-  if(dataReceived){
-    Serial.printf("Data received, sending response...");
-    if((data[2] == 0x35) && (data[3] == 0x31)){ 
-      WireWriteDataArray(ENC_ADDR, tankForward, 4);
-      if((data[2] == 0x35) && (data[3] == 0x30)){
-        WireWriteDataArray(ENC_ADDR, tankStop, 4);
-      }
-    }
-  }    
+  if(forward == true){
+    WireWriteDataArray(ENC_ADDR, tankForward, 4);
+  }
+  if(reverse == true){
+    WireWriteDataArray(ENC_ADDR, tankReverse, 4);
+  }
+  if(left == true){
+    WireWriteDataArray(ENC_ADDR, hardLeft, 4);
+  }
+  if(right == true){
+    WireWriteDataArray(ENC_ADDR, hardRight, 4);
+  }
+  /*else{
+    WireWriteDataArray(ENC_ADDR, tankStop, 4);
+  }*/
 }
 
 //onDataReceived is used to receive data from Bluefruit Connect App
 void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, void* context) {
   uint8_t i;
-  dataReceived = true;
   Serial.printf("Received data from: %02X:%02X:%02X:%02X:%02X:%02X \n", peer.address()[0], peer.address()[1],peer.address()[2], peer.address()[3], peer.address()[4], peer.address()[5]);
 
   Serial.printf("Bytes: ");
@@ -105,12 +113,24 @@ void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, 
   Serial.printf("Message: %s\n",(char *)data);
   if((data[0] == 0x21) && (data[1] == 0x42)){
     Serial.printf("1st value: %02X\n2nd value: %02X\n3rd value: %02X\n", data[2], data[3], data[4]);
-  }
-  else{
-    WireWriteDataArray(ENC_ADDR, tankStop, 4);
+    if((data[2] == 0x35) && (data[3] == 0x31)){
+      forward = true;
     }
-  
-  dataReceived = false;
+    if((data[2] == 0x36) && (data[3] == 0x31)){
+    reverse = true;
+    }
+    if((data[2] == 0x37) && (data[3] == 0x31)){
+      left = true;
+    }
+    if((data[2] == 0x38) && (data[3] == 0x31)){
+      right = true;
+    }
+
+    /*forward = false;
+    reverse = false;
+    left = false;
+    right = false; */
+  }   
 }
 
 bool WireWriteDataArray(uint8_t reg,int8_t *val,unsigned int len){    //(Send data through I2C)
