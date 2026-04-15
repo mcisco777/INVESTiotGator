@@ -10,7 +10,7 @@
 SYSTEM_MODE(SEMI_AUTOMATIC);
 SYSTEM_THREAD(ENABLED);
 
-/******************Declare Variables***************/
+/******************Declare Constants***************/
 const int ENC_ADDR = 0x34;
 const int MOTOR_TYPE_ADDR = 0x14;
 const int BATT_ADDR = 0x00;
@@ -20,6 +20,7 @@ const int FIXED_SPEED_ADDR = 0x33;
 const int ENC_TOTAL_ADDR = 0x3C;
 const int MOTOR_TYPE_JGB37_520_12V_110RPM = 3;
 
+/******************Declare Variables***************/
 int8_t motorType = MOTOR_TYPE_JGB37_520_12V_110RPM;
 int8_t motorPolarity = 0;
 

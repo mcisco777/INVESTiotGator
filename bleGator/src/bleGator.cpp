@@ -94,7 +94,7 @@ void loop() {
 //onDataReceived is used to receive data from Bluefruit Connect App
 void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, void* context) {
   uint8_t i;
-  bool dataReceived = true;
+  dataReceived = true;
   Serial.printf("Received data from: %02X:%02X:%02X:%02X:%02X:%02X \n", peer.address()[0], peer.address()[1],peer.address()[2], peer.address()[3], peer.address()[4], peer.address()[5]);
 
   Serial.printf("Bytes: ");
