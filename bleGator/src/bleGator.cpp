@@ -80,23 +80,21 @@ void setup() {
 }
 
 void loop() {
-  /*sprintf((char *)txBuf, "This is buffer data");
-  txBuf[UART_TX_BUF_SIZE-1] = 0x0A; // ensure the last character is a line feed (LF) as a NULL
-  Serial.printf("Sending 'txBuf' contains the string: %s\n", (char *)txBuf);
-  txCharacteristic.setValue(txBuf, UART_TX_BUF_SIZE);
-  delay(5000);*/
-/*
-  sprintf((char *)txBuf, "%i %i %i %i", endPix, rVal, gVal, bVal);
-  txBuf[UART_TX_BUF_SIZE-1] = 0x0A;
-  Serial.printf("Sending 'txBuf' contains the string: %s\n", (char *)txBuf);
-  txCharacteristic.setValue(txBuf, UART_TX_BUF_SIZE);*/
-  
+  if(dataReceived){
+    Serial.printf("Data received, sending response...");
+    if((data[2] == 0x35) && (data[3] == 0x31)){ 
+      WireWriteDataArray(ENC_ADDR, tankForward, 4);
+      if((data[2] == 0x35) && (data[3] == 0x30)){
+        WireWriteDataArray(ENC_ADDR, tankStop, 4);
+      }
+    }
+  }    
 }
 
 //onDataReceived is used to receive data from Bluefruit Connect App
 void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, void* context) {
   uint8_t i;
-
+  bool dataReceived = true;
   Serial.printf("Received data from: %02X:%02X:%02X:%02X:%02X:%02X \n", peer.address()[0], peer.address()[1],peer.address()[2], peer.address()[3], peer.address()[4], peer.address()[5]);
 
   Serial.printf("Bytes: ");
@@ -106,19 +104,13 @@ void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, 
   Serial.printf("\n");
   Serial.printf("Message: %s\n",(char *)data);
   if((data[0] == 0x21) && (data[1] == 0x42)){
-    Serial.printf("1st value: %02X, 2nd value: %02X, 3rd value: %02X\n", data[2], data[3], data[4]);
-    if((data[2] == 0x35) && (data[3] == 0x31)){
-      dataReceived = true;
-      WireWriteDataArray(ENC_ADDR, tankForward, 4);
-    }
-    if((data[2] == 0x35) && (data[3] == 0x30)){
-      WireWriteDataArray(ENC_ADDR, tankStop, 4);
-    }
+    Serial.printf("1st value: %02X\n2nd value: %02X\n3rd value: %02X\n", data[2], data[3], data[4]);
+  }
   else{
     WireWriteDataArray(ENC_ADDR, tankStop, 4);
     }
-  }
-  dataReceived = false;
+  
+  //dataReceived = false;
 }
 
 bool WireWriteDataArray(uint8_t reg,int8_t *val,unsigned int len){    //(Send data through I2C)
