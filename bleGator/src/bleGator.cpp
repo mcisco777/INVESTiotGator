@@ -30,7 +30,7 @@ const int MOTOR_TYPE_JGB37_520_12V_110RPM = 3;
 /******************************Declare Variables************************/
 uint8_t txBuf[UART_TX_BUF_SIZE];
 uint8_t i;
-//unsigned int last1;
+
 bool forward = false;
 bool reverse = false;
 bool left = false;
@@ -39,11 +39,11 @@ bool right = false;
 int8_t motorType = MOTOR_TYPE_JGB37_520_12V_110RPM;
 int8_t motorPolarity = 0;
 
-int8_t tankForward[4]={0,-20,0,20};
-int8_t tankReverse[4]={0,20,0,-20};
+int8_t tankForward[4]={0,-30,0,30};
+int8_t tankReverse[4]={0,30,0,-30};
 int8_t tankStop[4]={0,0,0,0};
-int8_t hardLeft[4]={0,-20,0,-20};
-int8_t hardRight[4]={0,20,0,20};
+int8_t hardLeft[4]={0,-30,0,-30};
+int8_t hardRight[4]={0,30,0,30};
 /*int8_t leftForward[4]={0,-20,0,10};
 int8_t rightForward[4]={0,-10,0,20};
 int8_t leftReverse[4]={0,20,0,-10};
@@ -84,20 +84,32 @@ void setup() {
 
 void loop() {
   if(forward == true){
-    WireWriteDataArray(ENC_ADDR, tankForward, 4);
+    WireWriteDataArray(FIXED_SPEED_ADDR, tankForward, 4);
   }
+  if(forward == false){
+    WireWriteDataArray(FIXED_SPEED_ADDR, tankStop, 4);
+  }
+
   if(reverse == true){
-    WireWriteDataArray(ENC_ADDR, tankReverse, 4);
+    WireWriteDataArray(FIXED_SPEED_ADDR, tankReverse, 4);
   }
+  if(reverse == false){
+    WireWriteDataArray(FIXED_SPEED_ADDR, tankStop, 4);
+  }
+
   if(left == true){
-    WireWriteDataArray(ENC_ADDR, hardLeft, 4);
+    WireWriteDataArray(FIXED_SPEED_ADDR, hardLeft, 4);
   }
+  if(left == false){
+    WireWriteDataArray(FIXED_SPEED_ADDR, tankStop, 4);
+  }
+
   if(right == true){
-    WireWriteDataArray(ENC_ADDR, hardRight, 4);
+    WireWriteDataArray(FIXED_SPEED_ADDR, hardRight, 4);
   }
-  /*else{
-    WireWriteDataArray(ENC_ADDR, tankStop, 4);
-  }*/
+  if(right == false){
+    WireWriteDataArray(FIXED_SPEED_ADDR, tankStop, 4);
+  }
 }
 
 //onDataReceived is used to receive data from Bluefruit Connect App
@@ -116,20 +128,30 @@ void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, 
     if((data[2] == 0x35) && (data[3] == 0x31)){
       forward = true;
     }
+    if((data[2] == 0x35) && (data[3] == 0x30)){
+      forward = false;
+    }
+    
     if((data[2] == 0x36) && (data[3] == 0x31)){
     reverse = true;
     }
+    if((data[2] == 0x36) && (data[3] == 0x30)){
+    reverse = false;
+    }
+
     if((data[2] == 0x37) && (data[3] == 0x31)){
       left = true;
     }
+    if((data[2] == 0x37) && (data[3] == 0x30)){
+      left = false;
+    }
+
     if((data[2] == 0x38) && (data[3] == 0x31)){
       right = true;
     }
-
-    /*forward = false;
-    reverse = false;
-    left = false;
-    right = false; */
+    if((data[2] == 0x38) && (data[3] == 0x30)){
+      right = false;
+    }
   }   
 }
 
