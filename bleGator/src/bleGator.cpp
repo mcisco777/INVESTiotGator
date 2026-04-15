@@ -110,7 +110,7 @@ void onDataReceived(const uint8_t* data, size_t len, const BlePeerDevice& peer, 
     WireWriteDataArray(ENC_ADDR, tankStop, 4);
     }
   
-  //dataReceived = false;
+  dataReceived = false;
 }
 
 bool WireWriteDataArray(uint8_t reg,int8_t *val,unsigned int len){    //(Send data through I2C)
